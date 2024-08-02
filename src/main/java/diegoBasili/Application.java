@@ -288,7 +288,7 @@ public class Application {
                             .append(libro.getTitolo()).append("@")
                             .append(libro.getAnnoPubblicazione()).append("@")
                             .append(libro.getNumeroPagine()).append("@")
-                            .append(libro.getAutore()).append(System.lineSeparator())
+                            .append(libro.getAutore()).append("@")
                             .append(libro.getGenere()).append(System.lineSeparator());
                 } else if (biblioteca instanceof Rivista) {
                     Rivista rivista = (Rivista) biblioteca;
