@@ -2,7 +2,7 @@ package diegoBasili.entities;
 
 import java.util.Random;
 
-public class Biblioteca {
+public abstract class Biblioteca {
     private int codiceISBN;
     private String titolo;
     private int annoPubblicazione;

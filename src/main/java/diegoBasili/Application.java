@@ -15,10 +15,8 @@ public class Application {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-
         List<Biblioteca> biblioteca = new ArrayList<>();
         inizializzazioneDellaBiblioteca(biblioteca, 5);
-        /*   System.out.println(biblioteca);*/
         File bibliotecaFromFile = new File("src/bibliotecaFromFile");
         biblioteca:
         while (true) {
@@ -66,7 +64,6 @@ public class Application {
                     break;
             }
         }
-        /* System.out.println(biblioteca);*/
     }
 
     public static void inizializzazioneDellaBiblioteca(List<Biblioteca> biblioteca, int numeroElementi) {
