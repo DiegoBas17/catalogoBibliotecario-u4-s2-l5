@@ -50,6 +50,8 @@ public class Application {
                     break;
                 }
                 case 7: {
+                    List<Biblioteca> ciclio
+                    leggiProdottiDaDisco()
                     break;
                 }
                 case 8: {
@@ -286,7 +288,8 @@ public class Application {
                             .append(libro.getTitolo()).append("@")
                             .append(libro.getAnnoPubblicazione()).append("@")
                             .append(libro.getNumeroPagine()).append("@")
-                            .append(libro.getAutore()).append(System.lineSeparator());
+                            .append(libro.getAutore()).append(System.lineSeparator())
+                            .append(libro.getGenere()).append(System.lineSeparator());
                 } else if (biblioteca instanceof Rivista) {
                     Rivista rivista = (Rivista) biblioteca;
                     stringa.append("Rivista@")
@@ -301,8 +304,42 @@ public class Application {
             System.out.println("Oggetti salvati su " + file.getName());
         } catch (IOException e) {
             System.err.println(e.getMessage());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
         }
+    }
+
+    public static void leggiProdottiDaDisco(File file, List<Biblioteca> bibliotecaFromFile) {
+        String content = null;
+        // Separa il contenuto in righe
+        String[] contentAsArray = content.split(System.lineSeparator());
+        for (String string : contentAsArray) {
+            String[] objBibliotecaString = string.split("@");
+            try {
+                if (objBibliotecaString.length == 7) {
+                    Libro libro = new Libro(
+                            objBibliotecaString[2],
+                            Integer.parseInt(objBibliotecaString[3]),
+                            Integer.parseInt(objBibliotecaString[4]),
+                            objBibliotecaString[5],
+                            objBibliotecaString[6]
+                    );
+                    bibliotecaFromFile.add(libro);
+                } else if (objBibliotecaString.length == 6) {
+                    Rivista rivista = new Rivista(
+                            objBibliotecaString[2],
+                            Integer.parseInt(objBibliotecaString[3]),
+                            Integer.parseInt(objBibliotecaString[4]),
+                            objBibliotecaString[5]
+                    );
+                    bibliotecaFromFile.add(rivista);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Errore di formato numero nella riga: " + string);
+                System.err.println("Messaggio: " + e.getMessage());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("Errore di indice nella riga: " + string);
+                System.err.println("Messaggio: " + e.getMessage());
+            }
+        }
+
     }
 }
