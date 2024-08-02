@@ -46,17 +46,16 @@ public class Application {
                     break;
                 }
                 case 6: {
-
                     salvaSuDisco(biblioteca, bibliotecaFromFile);
                     break;
                 }
                 case 7: {
-                    List<Biblioteca> newBiblioteca = new ArrayList<>();
+                    /*List<Biblioteca> newBiblioteca = new ArrayList<>();
                     leggiProdottiDaDisco(bibliotecaFromFile, newBiblioteca);
                     for (Biblioteca obj : bibliotecaFromFile) {
                         System.out.println(obj);
                     }
-                    break;
+                    break;*/
                 }
                 case 8: {
                     scanner.close();
