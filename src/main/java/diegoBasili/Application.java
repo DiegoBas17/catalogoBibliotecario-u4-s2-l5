@@ -4,7 +4,11 @@ import com.github.javafaker.Faker;
 import diegoBasili.entities.Biblioteca;
 import diegoBasili.entities.Libro;
 import diegoBasili.entities.Rivista;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Application {
@@ -15,10 +19,10 @@ public class Application {
         List<Biblioteca> biblioteca = new ArrayList<>();
         inizializzazioneDellaBiblioteca(biblioteca, 5);
         /*   System.out.println(biblioteca);*/
-
+        biblioteca:
         while (true) {
             inizioGestione();
-            int sceltaGestione = gestioneInputInt();
+            int sceltaGestione = gestioneInputIntMenu();
             switch (sceltaGestione) {
                 case 1: {
                     aggiuintaElemento(biblioteca);
@@ -41,14 +45,20 @@ public class Application {
                     break;
                 }
                 case 6: {
+                    File bibliotecaFromFile = new File("src/bibliotecaFromFile");
+                    salvaSuDisco(biblioteca, bibliotecaFromFile);
                     break;
                 }
                 case 7: {
                     break;
                 }
                 case 8: {
-                    break;
+                    scanner.close();
+                    break biblioteca;
                 }
+                default:
+                    System.out.println("Scelta non valida. Per favore, inserisci un numero da 1 a 8.");
+                    break;
             }
         }
         /* System.out.println(biblioteca);*/
@@ -61,6 +71,23 @@ public class Application {
             Libro libro = new Libro(f.book().title(), random.nextInt(2000, 2024), random.nextInt(1, 400), f.book().author(), f.book().genre());
             biblioteca.add(libro);
 
+        }
+    }
+
+    private static int gestioneInputIntMenu() {
+        while (true) {
+            try {
+                int input = scanner.nextInt();
+                scanner.nextLine(); // Pulisce il newline rimasto dopo nextInt()
+                if (input < 1 || input > 8) {
+                    System.out.println("Scelta non valida. Inserisci un numero tra 1 e 8.");
+                } else {
+                    return input;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Input non valido. Per favore, inserisci un numero intero.");
+                scanner.nextLine(); // Pulisce l'input non valido
+            }
         }
     }
 
@@ -213,7 +240,7 @@ public class Application {
         scanner.nextLine();
         List<Biblioteca> risultato = listaBiblioteca.stream().filter(obj -> obj.getCodiceISBN() == codiceISBN).toList();
         if (risultato.isEmpty()) {
-            System.out.println("Nessun oggetto trovato con il codice ISBN specificato.");
+            System.out.println("Nessun oggetto trovato con il codice ISBN fornito.");
         } else {
             System.out.println("Oggetti trovati con codice ISBN " + codiceISBN + ":");
             risultato.forEach(System.out::println);
@@ -248,5 +275,34 @@ public class Application {
         }
     }
 
-
+    public static void salvaSuDisco(List<Biblioteca> oggettiBiblioteca, File file) {
+        StringBuilder stringa = new StringBuilder();
+        try {
+            for (Biblioteca biblioteca : oggettiBiblioteca) {
+                if (biblioteca instanceof Libro) {
+                    Libro libro = (Libro) biblioteca;
+                    stringa.append("Libro@")
+                            .append(libro.getCodiceISBN()).append("@")
+                            .append(libro.getTitolo()).append("@")
+                            .append(libro.getAnnoPubblicazione()).append("@")
+                            .append(libro.getNumeroPagine()).append("@")
+                            .append(libro.getAutore()).append(System.lineSeparator());
+                } else if (biblioteca instanceof Rivista) {
+                    Rivista rivista = (Rivista) biblioteca;
+                    stringa.append("Rivista@")
+                            .append(rivista.getCodiceISBN()).append("@")
+                            .append(rivista.getTitolo()).append("@")
+                            .append(rivista.getAnnoPubblicazione()).append("@")
+                            .append(rivista.getNumeroPagine()).append("@")
+                            .append(rivista.getPeriodicità()).append(System.lineSeparator());
+                }
+            }
+            FileUtils.writeStringToFile(file, stringa.toString(), StandardCharsets.UTF_8);
+            System.out.println("Oggetti salvati su " + file.getName());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
 }
