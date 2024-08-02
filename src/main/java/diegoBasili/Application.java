@@ -19,6 +19,7 @@ public class Application {
         List<Biblioteca> biblioteca = new ArrayList<>();
         inizializzazioneDellaBiblioteca(biblioteca, 5);
         /*   System.out.println(biblioteca);*/
+        File bibliotecaFromFile = new File("src/bibliotecaFromFile");
         biblioteca:
         while (true) {
             inizioGestione();
@@ -45,13 +46,16 @@ public class Application {
                     break;
                 }
                 case 6: {
-                    File bibliotecaFromFile = new File("src/bibliotecaFromFile");
+
                     salvaSuDisco(biblioteca, bibliotecaFromFile);
                     break;
                 }
                 case 7: {
-                    List<Biblioteca> ciclio
-                    leggiProdottiDaDisco()
+                    List<Biblioteca> newBiblioteca = new ArrayList<>();
+                    leggiProdottiDaDisco(bibliotecaFromFile, newBiblioteca);
+                    for (Biblioteca obj : bibliotecaFromFile) {
+                        System.out.println(obj);
+                    }
                     break;
                 }
                 case 8: {
