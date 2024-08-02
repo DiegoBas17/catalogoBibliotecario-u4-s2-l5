@@ -1,21 +1,66 @@
 package diegoBasili;
 
+import com.github.javafaker.Faker;
+import diegoBasili.entities.Biblioteca;
 import diegoBasili.entities.Libro;
 import diegoBasili.entities.Rivista;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Application {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        inizioGestione();
-        int sceltaGestione = scanner.nextInt();
-        switch (sceltaGestione) {
-            case 1: {
-                aggiuintaElemento();
+
+        List<Biblioteca> biblioteca = new ArrayList<>();
+        inizializzazioneDellaBiblioteca(biblioteca, 5);
+        /*   System.out.println(biblioteca);*/
+
+        while (true) {
+            inizioGestione();
+            int sceltaGestione = gestioneInputInt();
+            switch (sceltaGestione) {
+                case 1: {
+                    aggiuintaElemento(biblioteca);
+                    break;
+                }
+                case 2: {
+                    rimuoviPerISBN(biblioteca);
+                    break;
+                }
+                case 3: {
+                    ricercaPerISBN(biblioteca);
+                    break;
+                }
+                case 4: {
+                    ricercaPerAnno(biblioteca);
+                    break;
+                }
+                case 5: {
+                    ricercaPerAutore(biblioteca);
+                    break;
+                }
+                case 6: {
+                    break;
+                }
+                case 7: {
+                    break;
+                }
+                case 8: {
+                    break;
+                }
             }
+        }
+        /* System.out.println(biblioteca);*/
+    }
+
+    public static void inizializzazioneDellaBiblioteca(List<Biblioteca> biblioteca, int numeroElementi) {
+        Faker f = new Faker(Locale.ITALIAN);
+        Random random = new Random();
+        for (int i = 0; i < numeroElementi; i++) {
+            Libro libro = new Libro(f.book().title(), random.nextInt(2000, 2024), random.nextInt(1, 400), f.book().author(), f.book().genre());
+            biblioteca.add(libro);
+
         }
     }
 
@@ -31,7 +76,7 @@ public class Application {
         System.out.println("8-esci");
     }
 
-    public static void aggiuintaElemento() {
+    public static void aggiuintaElemento(List<Biblioteca> biblioteca) {
         int scelta = 0;
         while (true) {
             try {
@@ -71,6 +116,7 @@ public class Application {
                 genere = scanner.nextLine();
 
                 Libro libro = new Libro(titolo, annoPublicazione, numeroPagine, autore, genere);
+                biblioteca.add(libro);
                 System.out.println("Libro aggiunto: " + libro);
             } catch (InputMismatchException e) {
                 System.out.println("Input non valido.");
@@ -89,21 +135,25 @@ public class Application {
                 numeroPagine = gestioneInputInt();
                 periodicita = gestionePeriodicita();
                 Rivista rivista = new Rivista(titolo, annoPublicazione, numeroPagine, periodicita);
+                biblioteca.add(rivista);
                 System.out.println("Rivista aggiunta: " + rivista);
             } catch (InputMismatchException e) {
                 System.out.println("Input non valido.");
                 scanner.nextLine();
-
             }
         }
-
-
     }
 
     private static int gestioneInputInt() {
         while (true) {
             try {
-                return scanner.nextInt();
+                int input = scanner.nextInt();
+                scanner.nextLine();
+                if (input >= 0) {
+                    return input;
+                } else {
+                    System.out.println("Input non valido. Per favore, inserisci un numero positivo.");
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Input non valido. Per favore, inserisci un numero.");
                 scanner.nextLine();
@@ -138,4 +188,65 @@ public class Application {
             }
         }
     }
+
+    public static void rimuoviPerISBN(List<Biblioteca> listaBiblioteca) {
+        System.out.println("Inserisci il codice ISBN per rimuovere L'elemento");
+        int codiceISBN = gestioneInputInt();
+        scanner.nextLine();
+        boolean match = false;
+        for (int i = 0; i < listaBiblioteca.size(); i++) {
+            if (listaBiblioteca.get(i).getCodiceISBN() == codiceISBN) {
+                listaBiblioteca.remove(i);
+                System.out.println("Oggetto rimosso");
+                match = true;
+                break;
+            }
+        }
+        if (!match) {
+            System.out.println("Nessun elemento presente con il codice ISBN");
+        }
+    }
+
+    public static void ricercaPerISBN(List<Biblioteca> listaBiblioteca) {
+        System.out.println("Inserisci il codice ISBN per rimuovere L'elemento");
+        int codiceISBN = gestioneInputInt();
+        scanner.nextLine();
+        List<Biblioteca> risultato = listaBiblioteca.stream().filter(obj -> obj.getCodiceISBN() == codiceISBN).toList();
+        if (risultato.isEmpty()) {
+            System.out.println("Nessun oggetto trovato con il codice ISBN specificato.");
+        } else {
+            System.out.println("Oggetti trovati con codice ISBN " + codiceISBN + ":");
+            risultato.forEach(System.out::println);
+        }
+    }
+
+    public static void ricercaPerAnno(List<Biblioteca> listaBiblioteca) {
+        System.out.println("Inserisci l'anno dei libri che vuoi visualizzare");
+        int anno = gestioneInputInt();
+        listaBiblioteca.stream().filter(book -> Objects.equals(book.getAnnoPubblicazione(), anno)).forEach(System.out::println);
+    }
+
+    public static void ricercaPerAutore(List<Biblioteca> listaBiblioteca) {
+        if (listaBiblioteca.isEmpty()) {
+            System.out.println("La lista di biblioteca è vuota.");
+        }
+        System.out.println("Inserisci l'autore dei libri che vuoi visualizzare");
+        String autore = scanner.nextLine();
+        if (autore.isEmpty()) {
+            System.out.println("L'autore non può essere una stringa vuota.");
+        }
+        List<Libro> risultati = listaBiblioteca.stream()
+                .filter(book -> book instanceof Libro) // Filtra solo gli oggetti di tipo Libro
+                .map(book -> (Libro) book) // Cast a Libro
+                .filter(libro -> Objects.equals(libro.getAutore(), autore)) // Filtra per autore
+                .toList();
+        if (risultati.isEmpty()) {
+            System.out.println("Nessun libro trovato per l'autore specificato.");
+        } else {
+            System.out.println("Libri trovati per l'autore '" + autore + "':");
+            risultati.forEach(System.out::println);
+        }
+    }
+
+
 }
